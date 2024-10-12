@@ -13,24 +13,24 @@ from .tensor_data import TensorData
 
 # Comment these out if not yet implemented
 from .tensor_functions import (
-    EQ,
-    LT,
-    Add,
-    All,
+    # EQ,
+    # LT,
+    # Add,
+    # All,
     Copy,
-    Exp,
+    # Exp,
     Inv,
-    IsClose,
-    Log,
+    # IsClose,
+    # Log,
     MatMul,
-    Mul,
-    Neg,
-    Permute,
-    ReLU,
-    Sigmoid,
-    Sum,
-    View,
-    tensor,
+    # Mul,
+    # Neg,
+    # Permute,
+    # ReLU,
+    # Sigmoid,
+    # Sum,
+    # View,
+    # tensor,
 )
 
 if TYPE_CHECKING:
@@ -285,3 +285,4 @@ class Tensor:
 
     # Functions
     # TODO: Implement for Task 2.3.
+    
