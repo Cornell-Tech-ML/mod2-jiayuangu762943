@@ -13,24 +13,24 @@ from .tensor_data import TensorData
 
 # Comment these out if not yet implemented
 from .tensor_functions import (
-    # EQ,
-    # LT,
-    # Add,
-    # All,
+    EQ,
+    LT,
+    Add,
+    All,
     Copy,
-    # Exp,
+    Exp,
     Inv,
-    # IsClose,
-    # Log,
+    IsClose,
+    Log,
     MatMul,
-    # Mul,
-    # Neg,
-    # Permute,
-    # ReLU,
-    # Sigmoid,
-    # Sum,
-    # View,
-    # tensor,
+    Mul,
+    Neg,
+    Permute,
+    ReLU,
+    Sigmoid,
+    Sum,
+    View,
+    #tensor,
 )
 
 if TYPE_CHECKING:
@@ -285,4 +285,90 @@ class Tensor:
 
     # Functions
     # TODO: Implement for Task 2.3.
+    @property
+    def size(self) -> int:
+        return self._tensor.size
+
+    @property
+    def dims(self) -> int:
+        return self._tensor.dims
     
+    def __add__(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return Add.apply(self, b)
+
+    def __sub__(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return Add.apply(self, Neg.apply(b))
+    
+    def __mul__(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return Mul.apply(self, b)
+
+    def __lt__(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return LT.apply(self, b)
+    
+    def __eq__(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return EQ.apply(self, b)
+
+    def __gt__(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return LT.apply(b, self)  # a > b is equivalent to b < a
+
+    def __neg__(self) -> Tensor:
+        return Neg.apply(self)
+
+    def __radd__(self, b: TensorLike) -> Tensor:
+        return self + b
+
+    def __rmul__(self, b: TensorLike) -> Tensor:
+        return self * b
+
+    def all(self, dim: Optional[int] = None) -> Tensor:
+        if dim is None:
+            return All.apply(self)
+        else:
+            return All.apply(self,  self._ensure_tensor(dim))
+
+    def is_close(self, b: TensorLike) -> Tensor:
+        b = self._ensure_tensor(b)
+        return IsClose.apply(self, b)
+
+    def sigmoid(self) -> Tensor:
+        return Sigmoid.apply(self)
+
+    def relu(self) -> Tensor:
+        return ReLU.apply(self)
+
+    def log(self) -> Tensor:
+        return Log.apply(self)
+
+    def exp(self) -> Tensor:
+        return Exp.apply(self)
+
+    def sum(self, dim: Optional[int] = None) -> Tensor:
+        if dim is None:
+            # Sum over all dimensions
+            return Sum.apply(self)
+        else:
+            return Sum.apply(self, self._ensure_tensor(dim))
+    
+    def mean(self, dim: int = None) -> Tensor:
+        total = self.sum(dim)
+        if dim is None:
+            count = self.size
+        else:
+            count = self.shape[dim]
+        return total / count
+
+    def permute(self, *order: int) -> Tensor:
+        return Permute.apply(self, order)
+
+    def view(self, *shape: int) -> Tensor:
+        shape_tensor = Tensor.make(shape, (len(shape),), backend=self.backend)
+        return View.apply(self, shape_tensor)
+
+    def zero_grad_(self) -> None:
+        self.grad = None

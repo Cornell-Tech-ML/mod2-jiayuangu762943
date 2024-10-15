@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Set, Tuple, Protocol
+from typing import Any, Iterable, List, Set, Tuple, Protocol
 
 
 # ## Task 1.1
@@ -114,28 +114,19 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
         No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
 
     """
-    # TODO: Implement for Task 1.4.
-    sorted_vars = topological_sort(variable)
-
-    # Step 2: Initialize the dictionary to store derivatives
-    derivs: Dict[int, Any] = {variable.unique_id: deriv}
-
-    # Step 3: Process each variable in reverse topological order
-    for var in sorted_vars:
-        # If it's a leaf node, accumulate its derivative
+    queue = topological_sort(variable)
+    derivatives = {}
+    derivatives[variable.unique_id] = deriv
+    for var in queue:
+        deriv = derivatives[var.unique_id]
         if var.is_leaf():
-            var.accumulate_derivative(derivs.get(var.unique_id, 0.0))
+            var.accumulate_derivative(deriv)
         else:
-            # Apply the chain rule to compute the derivatives with respect to its parents
-            for parent, parent_deriv in var.chain_rule(derivs[var.unique_id]):
-                if parent.unique_id in derivs:
-                    derivs[parent.unique_id] += (
-                        parent_deriv  # Accumulate the derivative
-                    )
-                else:
-                    derivs[parent.unique_id] = parent_deriv  # Initialize the derivative
-
-
+            for v, d in var.chain_rule(deriv):
+                if v.is_constant():
+                    continue
+                derivatives.setdefault(v.unique_id, 0.0)
+                derivatives[v.unique_id] = derivatives[v.unique_id] + d
 @dataclass
 class Context:
     """Context class is used by `Function` to store information during the forward pass."""
