@@ -170,7 +170,7 @@ class TensorData:
         self._shape = array(shape)
         self.strides = strides
         self.dims = len(strides)
-        self.size = int(prod(shape))
+        self.size = int(prod([ele for ele in shape]))
         self.shape = shape
         assert len(self._storage) == self.size
 

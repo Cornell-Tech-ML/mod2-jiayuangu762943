@@ -353,9 +353,9 @@ class Tensor:
             # Sum over all dimensions
             return Sum.apply(self)
         else:
-            return Sum.apply(self, self._ensure_tensor(dim))
+            return Sum.apply(self, dim) #self._ensure_tensor(dim)
     
-    def mean(self, dim: int = None) -> Tensor:
+    def mean(self, dim: Optional[int] = None) -> Tensor:
         total = self.sum(dim)
         if dim is None:
             count = self.size
@@ -367,7 +367,7 @@ class Tensor:
         return Permute.apply(self, order)
 
     def view(self, *shape: int) -> Tensor:
-        shape_tensor = Tensor.make(shape, (len(shape),), backend=self.backend)
+        shape_tensor = Tensor.make([ele for ele in shape], (len(shape),), backend=self.backend)
         return View.apply(self, shape_tensor)
 
     def zero_grad_(self) -> None:

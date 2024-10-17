@@ -184,13 +184,14 @@ class Exp(Function):
     
 class Sum(Function):
     @staticmethod
-    def forward(ctx: Context, t1: Tensor, dim: Optional[Tensor] = None) -> Tensor:
+    def forward(ctx: Context, t1: Tensor, dim: Optional[int] = None) -> Tensor:
         if dim is None:
             dim_int = -1
             ctx.save_for_backward(t1, dim_int)
             return t1.f.add_reduce(t1.contiguous().view(int(operators.prod([ele for ele in t1.shape]))), 0)
         
-        dim_int = int(dim.item())
+        # dim_int = int(dim.item())
+        dim_int = dim
         ctx.save_for_backward(t1, dim_int)
         return t1.f.add_reduce(t1, dim_int)
 
@@ -200,15 +201,10 @@ class Sum(Function):
         if dim == -1:
             res = t1.expand(grad_output)
             return (res,)
-        # Reshape grad_output to insert a dimension at 'dim'
-        shape = list(grad_output.shape)
-        shape.insert(dim, 1)
-        grad_input = grad_output.view(*shape)
-        # Expand grad_input to match t1's shape
-        tmp = [ele for ele in t1.shape]
-        # res = grad_input.expand(minitorch.Tensor.make(storage =tmp, shape=(len(tmp),), strides = None, backend=grad_input.backend))
+        
         res = t1.expand(grad_output)
-        return (res,)
+      
+        return (res, )
     
 
 class LT(Function):
