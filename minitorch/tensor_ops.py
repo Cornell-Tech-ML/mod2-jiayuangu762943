@@ -191,26 +191,30 @@ class SimpleOps(TensorOps):
     def reduce(
         fn: Callable[[float, float], float], start: float = 0.0
     ) -> Callable[["Tensor", int], "Tensor"]:
-        """Higher-order tensor reduce function. ::
+        """Create a higher-order tensor reduce function.
 
-          fn_reduce = reduce(fn)
-          out = fn_reduce(a, dim)
+        The returned function reduces a tensor along a specified dimension using the provided binary function `fn`.
 
-        Simple version ::
+        Example:
+            ```python
+            fn_reduce = reduce(fn)
+            out = fn_reduce(a, dim)
+            ```
 
+        Simple version:
+            ```python
             for j:
                 out[1, j] = start
                 for i:
                     out[1, j] = fn(out[1, j], a[i, j])
-
+            ```
 
         Args:
-            fn: function from two floats-to-float to apply
-            a (:class:`TensorData`): tensor to reduce over
-            dim (int): int of dim to reduce
+            fn (Callable[[float, float], float]): Function from two floats to a float, used for reduction.
+            start (float, optional): The initial value for the reduction operation. Defaults to 0.0.
 
         Returns:
-            :class:`TensorData` : new tensor
+            Callable[[Tensor, int], Tensor]: A function that takes a tensor and a dimension, and returns a reduced tensor.
 
         """
         f = tensor_reduce(fn)

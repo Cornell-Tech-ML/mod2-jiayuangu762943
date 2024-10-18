@@ -505,6 +505,17 @@ class IsClose(Function):
 class Permute(Function):
     @staticmethod
     def forward(ctx: Context, t1: Tensor, order: Tensor) -> Tensor:
+        """Forward pass for permuting tensor dimensions.
+
+        Args:
+            ctx (Context): The context to save information for backward computation.
+            t1 (Tensor): The input tensor.
+            order (Tensor): A tensor containing the new order of dimensions.
+
+        Returns:
+            Tensor: The permuted tensor.
+
+        """
         order_tuple = tuple(int(order[i]) for i in range(order.size))
         ctx.save_for_backward(order_tuple)
         # Permute the tensor dimensions
@@ -512,6 +523,16 @@ class Permute(Function):
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, int]:
+        """Backward pass for permuting tensor dimensions.
+
+        Args:
+            ctx (Context): The context with saved variables.
+            grad_output (Tensor): The gradient of the output.
+
+        Returns:
+            Tuple[Tensor, None]: The gradient with respect to the input tensor and None for the 'order' gradient.
+
+        """
         (order,) = ctx.saved_values
         # Compute inverse permutation
         inv_order = [0] * len(order)
@@ -606,7 +627,7 @@ def zeros(shape: UserShape, backend: TensorBackend = SimpleBackend) -> Tensor:
 
     """
     return minitorch.Tensor.make(
-        [0.0] * int(operators.prod(shape)), shape, backend=backend
+        [0.0] * int(operators.prod([ele for ele in shape])), shape, backend=backend
     )
 
 
@@ -628,7 +649,7 @@ def rand(
         :class:`Tensor` : new tensor
 
     """
-    vals = [random.random() for _ in range(int(operators.prod(shape)))]
+    vals = [random.random() for _ in range(int(operators.prod([ele for ele in shape])))]
     tensor = minitorch.Tensor.make(vals, shape, backend=backend)
     tensor.requires_grad_(requires_grad)
     return tensor
@@ -699,6 +720,19 @@ def tensor(
 def grad_central_difference(
     f: Any, *vals: Tensor, arg: int = 0, epsilon: float = 1e-6, ind: UserIndex
 ) -> float:
+    """Compute the central difference approximation of the gradient.
+
+    Args:
+        f (Any): The function to differentiate.
+        *vals (Tensor): The input tensors.
+        arg (int, optional): The index of the argument to compute the gradient with respect to.
+        epsilon (float, optional): The small shift for computing the difference. Defaults to 1e-6.
+        ind (UserIndex): The index at which to compute the gradient.
+
+    Returns:
+        float: The approximated gradient at the specified index.
+
+    """
     x = vals[arg]
     up = zeros(x.shape)
     up[ind] = epsilon
