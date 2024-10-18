@@ -36,10 +36,12 @@ def index_to_position(index: Index, strides: Strides) -> int:
     """Convert a multidimensional tensor `index` into a single-dimensional position in storage based on strides.
 
     Args:
+    ----
         index (Index): Index tuple of ints.
         strides (Strides): Tensor strides.
 
     Returns:
+    -------
         int: Position in storage.
 
     """
@@ -58,6 +60,7 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     It may not be the inverse of `index_to_position`.
 
     Args:
+    ----
         ordinal (int): Ordinal position to convert.
         shape (Shape): Tensor shape.
         out_index (OutIndex): Return index corresponding to position.
@@ -78,6 +81,7 @@ def broadcast_index(
     Additional dimensions may need to be mapped to 0 or removed.
 
     Args:
+    ----
         big_index (Index): Multidimensional index of bigger tensor.
         big_shape (Shape): Tensor shape of bigger tensor.
         shape (Shape): Tensor shape of smaller tensor.
@@ -93,13 +97,16 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
     """Broadcast two shapes to create a new union shape.
 
     Args:
+    ----
         shape1 (UserShape): First shape.
         shape2 (UserShape): Second shape.
 
     Returns:
+    -------
         UserShape: Broadcasted shape.
 
     Raises:
+    ------
         IndexingError: If shapes cannot be broadcast.
 
     """
@@ -128,9 +135,11 @@ def strides_from_shape(shape: UserShape) -> UserStrides:
     """Return a contiguous stride for a given shape.
 
     Args:
+    ----
         shape (UserShape): The shape of the tensor.
 
     Returns:
+    -------
         UserStrides: The strides corresponding to the shape.
 
     """
@@ -145,7 +154,8 @@ def strides_from_shape(shape: UserShape) -> UserStrides:
 class TensorData:
     """Manage the data and indexing for tensors.
 
-    Attributes:
+    Attributes
+    ----------
         _storage (Storage): The underlying storage array for tensor data.
         _strides (Strides): The strides for indexing into the storage.
         _shape (Shape): The shape of the tensor.
@@ -173,6 +183,7 @@ class TensorData:
         """Initialize a TensorData object.
 
         Args:
+        ----
             storage (Union[Sequence[float], Storage]): The data for the tensor.
             shape (UserShape): The shape of the tensor.
             strides (Optional[UserStrides]): The strides for the tensor. If None, will be calculated from the shape.
@@ -206,7 +217,8 @@ class TensorData:
     def is_contiguous(self) -> bool:
         """Check if the tensor data is stored contiguously.
 
-        Returns:
+        Returns
+        -------
             bool: True if the data is contiguous, False otherwise.
 
         """
@@ -222,10 +234,12 @@ class TensorData:
         """Broadcast two shapes to create a new union shape.
 
         Args:
+        ----
             shape_a (UserShape): First shape.
             shape_b (UserShape): Second shape.
 
         Returns:
+        -------
             UserShape: Broadcasted shape.
 
         """
@@ -235,12 +249,15 @@ class TensorData:
         """Convert a multidimensional index into a single-dimensional position in storage.
 
         Args:
+        ----
             index (Union[int, UserIndex]): The index to convert.
 
         Returns:
+        -------
             int: The position in storage.
 
         Raises:
+        ------
             IndexingError: If the index is invalid.
 
         """
@@ -269,7 +286,8 @@ class TensorData:
     def indices(self) -> Iterable[UserIndex]:
         """Generate all possible indices for the tensor.
 
-        Yields:
+        Yields
+        ------
             UserIndex: Each valid index for the tensor.
 
         """
@@ -282,7 +300,8 @@ class TensorData:
     def sample(self) -> UserIndex:
         """Get a random valid index for the tensor.
 
-        Returns:
+        Returns
+        -------
             UserIndex: A random index within the tensor's shape.
 
         """
@@ -292,9 +311,11 @@ class TensorData:
         """Get the value at the specified index.
 
         Args:
+        ----
             key (UserIndex): The index to access.
 
         Returns:
+        -------
             float: The value at the specified index.
 
         """
@@ -305,6 +326,7 @@ class TensorData:
         """Set the value at the specified index.
 
         Args:
+        ----
             key (UserIndex): The index to modify.
             val (float): The value to set.
 
@@ -314,7 +336,8 @@ class TensorData:
     def tuple(self) -> Tuple[Storage, Shape, Strides]:
         """Return the core tensor data as a tuple.
 
-        Returns:
+        Returns
+        -------
             Tuple[Storage, Shape, Strides]: The storage, shape, and strides.
 
         """
@@ -324,12 +347,15 @@ class TensorData:
         """Permute the dimensions of the tensor.
 
         Args:
+        ----
             *order (int): A permutation of the dimensions.
 
         Returns:
+        -------
             TensorData: A new TensorData with permuted dimensions.
 
         Raises:
+        ------
             AssertionError: If the provided order is not a valid permutation.
 
         """
@@ -344,7 +370,8 @@ class TensorData:
     def to_string(self) -> str:
         """Convert the tensor data to a string representation.
 
-        Returns:
+        Returns
+        -------
             str: The string representation of the tensor.
 
         """

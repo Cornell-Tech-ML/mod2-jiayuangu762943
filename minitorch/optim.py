@@ -9,6 +9,7 @@ class Optimizer:
         """Base class for all optimizers.
 
         Args:
+        ----
             parameters (Sequence[Parameter]): An iterable of parameters to optimize.
 
         """
@@ -20,6 +21,7 @@ class SGD(Optimizer):
         """Stochastic Gradient Descent (SGD) optimizer.
 
         Args:
+        ----
             parameters (Sequence[Parameter]): An iterable of parameters to optimize.
             lr (float, optional): Learning rate. Defaults to 1.0.
 

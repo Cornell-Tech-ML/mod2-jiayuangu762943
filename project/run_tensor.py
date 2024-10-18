@@ -30,7 +30,7 @@ class Linear(minitorch.Module):
         output = output + self.bias.value  # Shapes: (batch_size, out_features) + (out_features,)
 
         return output.view(x.shape[0], self.weights.value.shape[1])
-    
+
 class Network(minitorch.Module):
     def __init__(self, hidden_size):
         super().__init__()
@@ -46,7 +46,7 @@ class Network(minitorch.Module):
         x = self.layer2(x).relu()
         x = self.layer3(x).sigmoid()
         return x
-    
+
 def default_log_fn(epoch, total_loss, correct, losses):
     print("Epoch ", epoch, " loss ", total_loss, "correct", correct)
 

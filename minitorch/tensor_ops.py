@@ -40,16 +40,18 @@ class TensorOps:
     @staticmethod
     def reduce(
         fn: Callable[[float, float], float], start: float = 0.0
-    ) -> Callable[[Tensor, int], Tensor]: 
+    ) -> Callable[[Tensor, int], Tensor]:
         """Create a higher-order tensor reduce function.
 
         The returned function reduces a tensor along a specified dimension using the provided binary function `fn`.
 
         Args:
+        ----
             fn (Callable[[float, float], float]): A binary function that takes two floats and returns a float, used for reduction.
             start (float): The initial value for the reduction operation. Defaults to 0.0.
-        
+
         Returns:
+        -------
             Callable[[Tensor, int], Tensor]: A function that takes a tensor and a dimension, and returns a reduced tensor.
 
         """
@@ -69,10 +71,12 @@ class TensorBackend:
         that implements map, zip, and reduce higher-order functions.
 
         Args:
+        ----
             ops : tensor operations object see `tensor_ops.py`
 
 
         Returns:
+        -------
             A collection of tensor functions
 
         """
@@ -124,12 +128,14 @@ class SimpleOps(TensorOps):
                     out[i, j] = fn(a[i, 0])
 
         Args:
+        ----
             fn: function from float-to-float to apply.
             a (:class:`TensorData`): tensor to map over
             out (:class:`TensorData`): optional, tensor data to fill in,
                    should broadcast with `a`
 
         Returns:
+        -------
             new tensor data
 
         """
@@ -166,11 +172,13 @@ class SimpleOps(TensorOps):
 
 
         Args:
+        ----
             fn: function from two floats-to-float to apply
             a (:class:`TensorData`): tensor to zip over
             b (:class:`TensorData`): tensor to zip over
 
         Returns:
+        -------
             :class:`TensorData` : new tensor data
 
         """
@@ -196,6 +204,7 @@ class SimpleOps(TensorOps):
         The returned function reduces a tensor along a specified dimension using the provided binary function `fn`.
 
         Example:
+        -------
             ```python
             fn_reduce = reduce(fn)
             out = fn_reduce(a, dim)
@@ -210,10 +219,12 @@ class SimpleOps(TensorOps):
             ```
 
         Args:
+        ----
             fn (Callable[[float, float], float]): Function from two floats to a float, used for reduction.
             start (float, optional): The initial value for the reduction operation. Defaults to 0.0.
 
         Returns:
+        -------
             Callable[[Tensor, int], Tensor]: A function that takes a tensor and a dimension, and returns a reduced tensor.
 
         """
@@ -262,9 +273,11 @@ def tensor_map(
       broadcast. (`in_shape` must be smaller than `out_shape`).
 
     Args:
+    ----
         fn: function from float-to-float to apply
 
     Returns:
+    -------
         Tensor map function.
 
     """
@@ -279,15 +292,15 @@ def tensor_map(
     ) -> None:
         # TODO: Implement for Task 2.3.
         out_size = len(out)
-        #store intermediary index into out and in tensor storage
-        out_index = np.zeros(len(out_shape), dtype = np.int32)
-        in_index = np.zeros(len(in_shape), dtype = np.int32)
+        # store intermediary index into out and in tensor storage
+        out_index = np.zeros(len(out_shape), dtype=np.int32)
+        in_index = np.zeros(len(in_shape), dtype=np.int32)
         for i in range(out_size):
-            #get index into out and in tensor storage 
+            # get index into out and in tensor storage
             to_index(i, out_shape, out_index)
             broadcast_index(out_index, out_shape, in_shape, in_index)
             out_pos = index_to_position(out_index, out_strides)
-            #get corresponding positions into 1D array storage 
+            # get corresponding positions into 1D array storage
             in_pos = index_to_position(in_index, in_strides)
             out[out_pos] = fn(in_storage[in_pos])
 
@@ -315,9 +328,11 @@ def tensor_zip(
       and `b_shape` broadcast to `out_shape`.
 
     Args:
+    ----
         fn: function mapping two floats to float to apply
 
     Returns:
+    -------
         Tensor zip function.
 
     """
@@ -365,9 +380,11 @@ def tensor_reduce(
        except with `reduce_dim` turned to size `1`
 
     Args:
+    ----
         fn: reduction function mapping two floats to float
 
     Returns:
+    -------
         Tensor reduce function.
 
     """
@@ -391,7 +408,7 @@ def tensor_reduce(
             # always map to index 0 in dimension reduce_dim
             for dim in range(len(a_shape)):
                 if dim == reduce_dim:
-                    out_index[dim] = 0  
+                    out_index[dim] = 0
                 else:
                     out_index[dim] = a_index[dim]
             # Compute positions in storage arrays
@@ -399,7 +416,6 @@ def tensor_reduce(
             out_pos = index_to_position(out_index, out_strides)
 
             out[out_pos] = fn(out[out_pos], a_storage[a_pos])
-
 
     return _reduce
 
