@@ -17,8 +17,8 @@ ignore = [
     "**/.*",
     "*chainrule.py*",
 ]
-venvPath = "."
-venv = ".venv"
+venvPath = "../mod0-jiayuangu762943"
+venv = "mle"
 reportUnknownMemberType = "none"
 reportUnknownParameterType = "none"
 reportUnknownArgumentType = "none"
