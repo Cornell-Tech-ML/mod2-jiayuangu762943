@@ -40,7 +40,20 @@ class TensorOps:
     @staticmethod
     def reduce(
         fn: Callable[[float, float], float], start: float = 0.0
-    ) -> Callable[[Tensor, int], Tensor]: ...
+    ) -> Callable[[Tensor, int], Tensor]: 
+        """Create a higher-order tensor reduce function.
+
+        The returned function reduces a tensor along a specified dimension using the provided binary function `fn`.
+
+        Args:
+            fn (Callable[[float, float], float]): A binary function that takes two floats and returns a float, used for reduction.
+            start (float, optional): The initial value for the reduction operation. Defaults to 0.0.
+
+        Returns:
+            Callable[[Tensor, int], Tensor]: A function that takes a tensor and a dimension, and returns a reduced tensor.
+
+        """
+        ...
 
     @staticmethod
     def matrix_multiply(a: Tensor, b: Tensor) -> Tensor:
