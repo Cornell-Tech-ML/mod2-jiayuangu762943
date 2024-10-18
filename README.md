@@ -20,7 +20,7 @@ The files that will be synced are:
 
 - Number of points = 50 for all 4 datasets
 
-- Simple:  
+- Simple:
   Learning rate: 0.05,
   Number of epochs: 1500,
   Time per Epoch: 0.053s,
