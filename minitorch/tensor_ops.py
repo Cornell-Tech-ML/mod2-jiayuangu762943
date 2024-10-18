@@ -47,8 +47,8 @@ class TensorOps:
 
         Args:
             fn (Callable[[float, float], float]): A binary function that takes two floats and returns a float, used for reduction.
-            start (float, optional): The initial value for the reduction operation. Defaults to 0.0.
-
+            start (float): The initial value for the reduction operation. Defaults to 0.0.
+        
         Returns:
             Callable[[Tensor, int], Tensor]: A function that takes a tensor and a dimension, and returns a reduced tensor.
 

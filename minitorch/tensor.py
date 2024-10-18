@@ -107,6 +107,7 @@ class Tensor:
 
         """
         self.history = History()
+        
 
     def requires_grad(self) -> bool:
         """Check if this tensor requires gradient computation.
@@ -291,7 +292,7 @@ class Tensor:
 
         def zero(shape: UserShape) -> Tensor:
             return Tensor.make(
-                [0.0] * int(operators.prod(shape)), shape, backend=self.backend
+                [0.0] * int(operators.prod([ele for ele in shape])), shape, backend=self.backend
             )
 
         if shape is None:
@@ -333,7 +334,7 @@ class Tensor:
         assert self.is_leaf(), "Only leaf variables can have derivatives."
         if self.grad is None:
             self.grad = Tensor.make(
-                [0.0] * int(operators.prod(self.shape)),
+                [0.0] * int(operators.prod([ele for ele in self.shape])),
                 self.shape,
                 backend=self.backend,
             )
@@ -388,6 +389,7 @@ class Tensor:
         return [
             (inp, inp.expand(self._ensure_tensor(d_in)))
             for inp, d_in in zip(h.inputs, x)
+            
         ]
 
     def backward(self, grad_output: Optional[Tensor] = None) -> None:
@@ -598,7 +600,8 @@ class Tensor:
         if dim is None:
             return All.apply(self)
         else:
-            return All.apply(self, self._ensure_tensor(dim))
+            dim_tensor = self._ensure_tensor(dim)
+            return All.apply(self, dim_tensor)
 
     def is_close(self, b: TensorLike) -> Tensor:
         """Element-wise check if values are close between tensors.
@@ -661,9 +664,11 @@ class Tensor:
         """
         if dim is None:
             # Sum over all dimensions
-            return Sum.apply(self)
+            dim_tensor = Tensor.make([-1], (1,), backend=self.backend)
+            return Sum.apply(self, dim_tensor)
         else:
-            return Sum.apply(self, dim)
+            dim_tensor = Tensor.make([dim], (1,), backend=self.backend)
+            return Sum.apply(self, dim_tensor)
 
     def mean(self, dim: Optional[int] = None) -> Tensor:
         """Compute the mean of tensor elements over a given dimension.
@@ -693,7 +698,8 @@ class Tensor:
 
         """
         # Convert the order tuple into a tensor
-        return Permute.apply(self, order)
+        order_tensor = Tensor.make(list(order), (len(order),), backend=self.backend)
+        return Permute.apply(self, order_tensor)
 
     def view(self, *shape: int) -> Tensor:
         """Return a new tensor with the same data but a different shape.

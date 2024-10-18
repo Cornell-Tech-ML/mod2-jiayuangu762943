@@ -42,15 +42,10 @@ class Function:
         """Call the forward function and track history"""
         raw_vals = []
         need_grad = False
-        tensors = []
         for v in vals:
-            if isinstance(v, minitorch.Tensor):
-                if v.requires_grad():
-                    need_grad = True
-                raw_vals.append(v.detach())
-                tensors.append(v)
-            else:
-                raw_vals.append(v)
+            if v.requires_grad():
+                need_grad = True
+            raw_vals.append(v.detach())
 
         # Create the context.
         ctx = Context(not need_grad)
@@ -64,7 +59,7 @@ class Function:
         # Create a new variable from the result with a new history.
         back = None
         if need_grad:
-            back = minitorch.History(cls, ctx, tensors)
+            back = minitorch.History(cls, ctx, vals)
         return minitorch.Tensor(c._tensor, back, backend=c.backend)
 
 class Neg(Function):
@@ -163,7 +158,7 @@ class Add(Function):
 
 class All(Function):
     @staticmethod
-    def forward(ctx: Context, a: Tensor, dim: Optional[int] = None) -> Tensor:
+    def forward(ctx: Context, a: Tensor, dim: Optional[Tensor] = None) -> Tensor:
         """Forward pass to check if all elements are True.
 
         Args:
@@ -176,7 +171,7 @@ class All(Function):
 
         """
         if dim is not None:
-            return a.f.mul_reduce(a, dim)
+            return a.f.mul_reduce(a, int(dim.item()))
         else:
             return a.f.mul_reduce(a.contiguous().view(int(operators.prod([ele for ele in a.shape]))), 0)
 
@@ -366,7 +361,7 @@ class Sum(Function):
     """Summation function over tensor elements."""
 
     @staticmethod
-    def forward(ctx: Context, t1: Tensor, dim: Optional[int] = None) -> Tensor:
+    def forward(ctx: Context, t1: Tensor, dim: Tensor) -> Tensor:
         """Forward pass for summation.
 
         Args:
@@ -378,18 +373,18 @@ class Sum(Function):
             Tensor: The sum of the tensor elements.
 
         """
-        if dim is None:
-            dim_int = -1
-            ctx.save_for_backward(t1, dim_int)
+        if dim.shape == (1,) and int(dim.item()) == -1:
+            #no dim argument is passed in
+            ctx.save_for_backward(t1, int(dim.item()))
             size = int(operators.prod([ele for ele in t1.shape]))
             return t1.f.add_reduce(t1.contiguous().view(size), 0)
         else:
-            dim_int = dim
+            dim_int = int(dim.item())
             ctx.save_for_backward(t1, dim_int)
             return t1.f.add_reduce(t1, dim_int)
 
     @staticmethod
-    def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor]:
+    def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, int]:
         """Backward pass for summation.
 
         Args:
@@ -402,7 +397,7 @@ class Sum(Function):
         """
         t1, dim = ctx.saved_values
         res = t1.expand(grad_output)
-        return (res,)
+        return (res, dim)
 
 
 class LT(Function):
@@ -509,20 +504,21 @@ class IsClose(Function):
     
 class Permute(Function):
     @staticmethod
-    def forward(ctx: Context, t1: Tensor, order: Tuple[int, ...]) -> Tensor:
-        ctx.save_for_backward(order)
+    def forward(ctx: Context, t1: Tensor, order: Tensor) -> Tensor:
+        order_tuple = tuple(int(order[i]) for i in range(order.size))
+        ctx.save_for_backward(order_tuple)
         # Permute the tensor dimensions
-        return t1._new(t1._tensor.permute(*order))
+        return t1._new(t1._tensor.permute(*order_tuple))
 
     @staticmethod
-    def backward(ctx: Context, grad_output: Tensor) -> Tensor:
+    def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, int]:
         (order,) = ctx.saved_values
         # Compute inverse permutation
         inv_order = [0] * len(order)
         for i, o in enumerate(order):
             inv_order[o] = i
         # Permute gradient back to original order
-        return grad_output._new(grad_output._tensor.permute(*inv_order))
+        return (grad_output._new(grad_output._tensor.permute(*inv_order)), -1)
     
 class View(Function):
     @staticmethod
