@@ -29,13 +29,13 @@ Hidden Size: 2
 ![simple1](images/simple1.png)
 ![simple2](images/simple2.png)
 Epoch: 10/1500, loss: 34.34065103677544, correct: 23
- Epoch: 20/1500, loss: 34.14424388020557, correct: 23
- Epoch: 30/1500, loss: 33.975777230291214, correct: 23
- Epoch: 40/1500, loss: 33.82210937160985, correct: 23
- Epoch: 50/1500, loss: 33.67643192794467, correct: 37
- Epoch: 60/1500, loss: 33.537653575655376, correct: 40
- Epoch: 70/1500, loss: 33.400246837725476, correct: 46
- Epoch: 80/1500, loss: 33.260645147775875, correct: 46
+Epoch: 20/1500, loss: 34.14424388020557, correct: 23
+Epoch: 30/1500, loss: 33.975777230291214, correct: 23
+Epoch: 40/1500, loss: 33.82210937160985, correct: 23
+Epoch: 50/1500, loss: 33.67643192794467, correct: 37
+Epoch: 60/1500, loss: 33.537653575655376, correct: 40
+Epoch: 70/1500, loss: 33.400246837725476, correct: 46
+Epoch: 80/1500, loss: 33.260645147775875, correct: 46
 Epoch: 90/1500, loss: 33.11589989207305, correct: 46
 Epoch: 100/1500, loss: 32.96350489528697, correct: 45
 Epoch: 110/1500, loss: 32.8017335427709, correct: 44
